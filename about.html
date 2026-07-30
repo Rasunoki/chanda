@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>About — SauSaWrap</title>
+<link rel="icon" href="assets/menu/favicon.png?v=2" type="image/png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Space+Mono:wght@400;700&family=Work+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -130,7 +131,7 @@
   .name-diagram{display:flex; align-items:center; gap:10px; font-family:'Bungee',sans-serif; font-size:1.4rem; margin:0 0 16px; flex-wrap:wrap;}
   .name-diagram span.plus{color:var(--amber);}
   .name-diagram .sauce{color:var(--amber);}
-  .name-diagram .wrapword{color:var(--sage);}
+  .name-diagram .wrapword{color:var(--red);}
 
   /* ---------- WHY US ---------- */
   .why-grid{display:grid; grid-template-columns:1fr 1fr; gap:32px;}
@@ -140,22 +141,6 @@
     background:var(--paper); position:relative; overflow:hidden;
   }
   .why-card .num{font-family:'Bungee',sans-serif; font-size:2.4rem; color:var(--red); opacity:0.9; margin:0 0 10px;}
-
-  /* ---------- SEE MORE ---------- */
-  .expandable-text .section-sub {
-    max-height: 75px; /* Shows about 3 lines */
-    overflow: hidden;
-    transition: max-height 0.4s ease-in-out;
-    margin-bottom: 12px;
-    position: relative;
-  }
-  .expandable-text.expanded .section-sub {
-    max-height: 500px; /* Large enough for full content */
-  }
-  .btn-see-more {
-    font-family: 'Space Mono', monospace; font-weight: 700; text-decoration: underline;
-    background: none; border: none; padding: 0; cursor: pointer; color: var(--red);
-  }
 
   /* ---------- CONTACT / FOOTER ---------- */
   footer{background:var(--brown); color:var(--cream); padding:70px 0 30px; margin-top:88px;}
@@ -178,7 +163,7 @@
 
 <header>
   <nav>
-    <a href="index.html#home" class="logo"><span class="dot"></span>SauSaWrap</a>
+    <a href="index.html#home" class="logo"><img src="assets/menu/logo.png" alt="SauSaWrap logo" style="height: 100px;"></a>
     <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false" id="navToggle">
       <span class="hamburger"><span></span><span></span><span></span></span>
     </button>
@@ -200,8 +185,7 @@
 <section id="about" class="wrap" style="padding-top: 50px;">
   <h2 class="section-title">Where "sauce" meets "wrap"</h2>
   <div class="expandable-text" id="about-text">
-    <p class="section-sub">SauSaWrap was created to fill the demand for practical and appetizing on-the-go meals, standing out by uniquely combining Filipino flavors within a burrito or shawarma-style wrap. Each wrap features a fresh egg wrapper, encasing a choice of savory Filipino dishes with either plain or garlic rice, specifically Creamy Chicken Adobo, Mushroom Sisig, or Tapa Talong. Customers can further personalize their meal with a variety of dipping sauces, such as creamy béchamel, sweet sauce, or chili garlic mayo, and complete their meal with refreshing iced tea or soft drinks. This ensures a delicious, flavorful, and accessible dining experience at an ideal serving size.</p>
-    <button class="btn-see-more">See More</button>
+    <p class="section-sub">SauSaWrap was created to meet the rising demand for practical, appetizing, and customizable on-the-go meals. Our concept brings together beloved Filipino flavors, wrapped in a fresh egg wrapper and paired with plain or garlic rice, to create a filling and satisfying meal. Each SauSaWrap is made to be convenient without sacrificing taste, giving busy customers a delicious option they can enjoy anytime, anywhere.</p>
   </div>
 
   <div class="about-grid">
