@@ -130,7 +130,7 @@
   .name-diagram{display:flex; align-items:center; gap:10px; font-family:'Bungee',sans-serif; font-size:1.4rem; margin:0 0 16px; flex-wrap:wrap;}
   .name-diagram span.plus{color:var(--amber);}
   .name-diagram .sauce{color:var(--amber);}
-  .name-diagram .wrapword{color:var(--sage);}
+  .name-diagram .wrapword{color:var(--red);}
 
   /* ---------- WHY US ---------- */
   .why-grid{display:grid; grid-template-columns:1fr 1fr; gap:32px;}
@@ -183,7 +183,10 @@
 <!-- ================= ABOUT ================= -->
 <section id="about" class="wrap" style="padding-top: 50px;">
   <h2 class="section-title">Where "sauce" meets "wrap"</h2>
-  <p class="section-sub">SauSaWrap was created to fill the demand for practical and appetizing on-the-go meals, standing out by uniquely combining Filipino flavors within a burrito or shawarma-style wrap. Each wrap features a fresh egg wrapper, encasing a choice of savory Filipino dishes with either plain or garlic rice, specifically Creamy Chicken Adobo, Mushroom Sisig, or Tapa Talong. Customers can further personalize their meal with a variety of dipping sauces, such as creamy béchamel, sweet sauce, or chili garlic mayo, and complete their meal with refreshing iced tea or soft drinks. This ensures a delicious, flavorful, and accessible dining experience at an ideal serving size.</p>
+  <div class="expandable-text" id="about-text">
+    <p class="section-sub">SauSaWrap was created to fill the demand for practical and appetizing on-the-go meals, standing out by uniquely combining Filipino flavors within a burrito or shawarma-style wrap. Each wrap features a fresh egg wrapper, encasing a choice of savory Filipino dishes with either plain or garlic rice, specifically Creamy Chicken Adobo, Mushroom Sisig, or Tapa Talong. Customers can further personalize their meal with a variety of dipping sauces, such as creamy béchamel, sweet sauce, or chili garlic mayo, and complete their meal with refreshing iced tea or soft drinks. This ensures a delicious, flavorful, and accessible dining experience at an ideal serving size.</p>
+    <button class="btn-see-more">See More</button>
+  </div>
 
   <div class="about-grid">
     <div>
@@ -288,6 +291,17 @@
   });
   navOverlay.addEventListener('click', closeNav);
   navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', closeNav));
+
+  // See More Toggle
+  const expandableText = document.getElementById('about-text');
+  if (expandableText) {
+    const seeMoreBtn = expandableText.querySelector('.btn-see-more');
+    seeMoreBtn.addEventListener('click', () => {
+      const isExpanded = expandableText.classList.toggle('expanded');
+      seeMoreBtn.textContent = isExpanded ? 'See Less' : 'See More';
+    });
+  }
+
 </script>
 
 </body>
