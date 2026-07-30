@@ -130,7 +130,7 @@
   .name-diagram{display:flex; align-items:center; gap:10px; font-family:'Bungee',sans-serif; font-size:1.4rem; margin:0 0 16px; flex-wrap:wrap;}
   .name-diagram span.plus{color:var(--amber);}
   .name-diagram .sauce{color:var(--amber);}
-  .name-diagram .wrapword{color:var(--red);}
+  .name-diagram .wrapword{color:var(--sage);}
 
   /* ---------- WHY US ---------- */
   .why-grid{display:grid; grid-template-columns:1fr 1fr; gap:32px;}
@@ -140,6 +140,22 @@
     background:var(--paper); position:relative; overflow:hidden;
   }
   .why-card .num{font-family:'Bungee',sans-serif; font-size:2.4rem; color:var(--red); opacity:0.9; margin:0 0 10px;}
+
+  /* ---------- SEE MORE ---------- */
+  .expandable-text .section-sub {
+    max-height: 75px; /* Shows about 3 lines */
+    overflow: hidden;
+    transition: max-height 0.4s ease-in-out;
+    margin-bottom: 12px;
+    position: relative;
+  }
+  .expandable-text.expanded .section-sub {
+    max-height: 500px; /* Large enough for full content */
+  }
+  .btn-see-more {
+    font-family: 'Space Mono', monospace; font-weight: 700; text-decoration: underline;
+    background: none; border: none; padding: 0; cursor: pointer; color: var(--red);
+  }
 
   /* ---------- CONTACT / FOOTER ---------- */
   footer{background:var(--brown); color:var(--cream); padding:70px 0 30px; margin-top:88px;}
