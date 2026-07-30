@@ -25,6 +25,7 @@
     html{scroll-behavior:auto;}
     *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important;}
   }
+  html, body{ overflow-x:hidden; max-width:100%; }
   body{
     margin:0;
     background:var(--cream);
@@ -288,16 +289,36 @@
   /* ---------- PROMO CAROUSEL ---------- */
   .promo-carousel-container {
     position: relative;
-    max-width: 450px; /* Constrain width for tall images */
-    margin: 0 auto; /* Center the carousel */
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 0 56px;
+  }
+  .promo-carousel-viewport {
+    overflow: hidden;
+    padding: 26px 0 44px;
   }
   .promo-carousel-track {
-    display: flex; overflow: hidden;
-    transition: transform 0.5s ease-in-out; /* Add smooth transition */
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    transition: transform 0.5s ease;
+    will-change: transform;
   }
   .promo-slide {
-    flex: 0 0 100%;
-    /* The slide itself is just a container */
+    flex: 0 0 230px;
+    cursor: pointer;
+    transform: scale(0.82);
+    opacity: 0.55;
+    transition: transform 0.5s ease, opacity 0.5s ease;
+  }
+  .promo-slide.active {
+    transform: scale(1.22);
+    opacity: 1;
+    z-index: 2;
+  }
+  @media (max-width: 600px) {
+    .promo-slide { flex-basis: 165px; }
+    .promo-carousel-container { padding: 0 44px; }
   }
   .promo-slide img {
     display: block;
@@ -306,9 +327,12 @@
     width: 100%;
     aspect-ratio: 1587 / 2245;
     object-fit: cover;
-    border-radius: var(--radius);
-    margin-bottom: 16px;
+    margin-bottom: 0;
     background-color: var(--cream);
+    transition: box-shadow 0.3s ease;
+  }
+  .promo-slide.active img {
+    box-shadow: 0 6px 0 var(--red);
   }
   .carousel-btn {
     position: absolute;
@@ -319,8 +343,8 @@
     border-radius: 50%;
     width: 44px; height: 44px; cursor: pointer; font-size: 1.5rem;
   }
-  .carousel-btn.prev { left: -24px; }
-  .carousel-btn.next { right: -24px; }
+  .carousel-btn.prev { left: 0; }
+  .carousel-btn.next { right: 0; }
   .carousel-dots { text-align: center; margin-top: -10px; }
   .carousel-dot {
     display: inline-block;
@@ -388,6 +412,7 @@
   <p class="eyebrow">Promotions &amp; Events</p>
   <h2 class="section-title">Deals worth wrapping up</h2>
   <div class="promo-carousel-container">
+    <div class="promo-carousel-viewport">
     <div class="promo-carousel-track">
       <div class="promo-slide">
         <img src="assets/promo/1.png" alt="Discounts: Seasonal price cuts on signature wraps and combo sets.">
@@ -413,6 +438,7 @@
       <div class="promo-slide">
         <img src="assets/promo/8.png" alt="New Promotion 8">
       </div>
+    </div>
     </div>
     <button class="carousel-btn prev" aria-label="Previous Promotion">‹</button>
     <button class="carousel-btn next" aria-label="Next Promotion">›</button>
@@ -478,47 +504,113 @@
   navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', closeNav));
 
   // Promo Carousel
+  const viewport = document.querySelector('.promo-carousel-viewport');
   const track = document.querySelector('.promo-carousel-track');
-  const slides = Array.from(track.children);
+  track.style.position = 'relative'; // fixes offsetLeft as a stable reference frame
+  const realSlides = Array.from(track.children); // the actual promo slides, before cloning
   const nextButton = document.querySelector('.carousel-btn.next');
   const prevButton = document.querySelector('.carousel-btn.prev');
   const dotsNav = document.querySelector('.carousel-dots');
   let currentIndex = 0;
   let autoPlayInterval;
+  let isAnimating = false;
 
-  // Create dots
-  slides.forEach((slide, index) => {
+  // One dot per real slide (clones don't get their own dot)
+  realSlides.forEach((slide, index) => {
     const dot = document.createElement('button');
     dot.classList.add('carousel-dot');
-    dot.addEventListener('click', () => {
-      goToSlide(index);
-      resetAutoPlay();
-    });
+    dot.setAttribute('aria-label', 'Go to slide ' + (index + 1));
+    dot.addEventListener('click', () => { setActive(index); resetAutoPlay(); });
     dotsNav.appendChild(dot);
   });
-
   const dots = Array.from(dotsNav.children);
 
-  const updateSlidePosition = () => {
-    track.style.transform = 'translateX(-' + 100 * currentIndex + '%)';
-    dots.forEach((dot, index) => {
-      dot.classList.toggle('active', index === currentIndex);
-    });
+  // Clone the last slide to the front and the first slide to the back, so
+  // sliding past either end lands on a "clone" that looks identical, then
+  // silently snaps onto the real slide behind it for a seamless loop.
+  const leadClone = realSlides[realSlides.length - 1].cloneNode(true);
+  const tailClone = realSlides[0].cloneNode(true);
+  [leadClone, tailClone].forEach(clone => {
+    clone.classList.add('clone-slide');
+    clone.setAttribute('aria-hidden', 'true');
+    clone.setAttribute('tabindex', '-1');
+  });
+  track.insertBefore(leadClone, track.firstChild);
+  track.appendChild(tailClone);
+
+  const highlight = (index) => {
+    realSlides.forEach((slide, i) => slide.classList.toggle('active', i === index));
+    leadClone.classList.toggle('active', index === realSlides.length - 1);
+    tailClone.classList.toggle('active', index === 0);
+    dots.forEach((dot, i) => dot.classList.toggle('active', i === index));
   }
 
-  const goToSlide = (index) => {
-    currentIndex = index;
-    updateSlidePosition();
+  // Physically slides the track so `el`'s center lands on the viewport's center.
+  const centerOn = (el, animate = true) => {
+    const target = el.offsetLeft + el.offsetWidth / 2 - viewport.clientWidth / 2;
+    track.style.transition = animate ? '' : 'none';
+    track.style.transform = 'translateX(' + (-target) + 'px)';
+    if (!animate) {
+      void track.offsetHeight; // force reflow so the "none" transition actually applies
+      track.style.transition = '';
+    }
   }
+
+  const afterTransition = (cb) => {
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      track.removeEventListener('transitionend', handler);
+      cb();
+    };
+    const handler = (e) => { if (e.target === track && e.propertyName === 'transform') finish(); };
+    track.addEventListener('transitionend', handler);
+    setTimeout(finish, 600); // safety fallback
+  }
+
+  const setActive = (index, animate = true) => {
+    currentIndex = (index + realSlides.length) % realSlides.length;
+    highlight(currentIndex);
+    centerOn(realSlides[currentIndex], animate);
+  }
+
+  realSlides.forEach((slide, index) => {
+    slide.addEventListener('click', () => { setActive(index); resetAutoPlay(); });
+  });
+  leadClone.addEventListener('click', () => { prevSlide(); resetAutoPlay(); });
+  tailClone.addEventListener('click', () => { nextSlide(); resetAutoPlay(); });
 
   const nextSlide = () => {
-    currentIndex = (currentIndex + 1) % slides.length;
-    updateSlidePosition();
+    if (isAnimating) return;
+    if (currentIndex === realSlides.length - 1) {
+      isAnimating = true;
+      highlight(0);
+      centerOn(tailClone, true);
+      afterTransition(() => {
+        currentIndex = 0;
+        centerOn(realSlides[0], false);
+        isAnimating = false;
+      });
+    } else {
+      setActive(currentIndex + 1);
+    }
   }
 
   const prevSlide = () => {
-    currentIndex = (currentIndex - 1 + slides.length) % slides.length;
-    updateSlidePosition();
+    if (isAnimating) return;
+    if (currentIndex === 0) {
+      isAnimating = true;
+      highlight(realSlides.length - 1);
+      centerOn(leadClone, true);
+      afterTransition(() => {
+        currentIndex = realSlides.length - 1;
+        centerOn(realSlides[currentIndex], false);
+        isAnimating = false;
+      });
+    } else {
+      setActive(currentIndex - 1);
+    }
   }
 
   const startAutoPlay = () => {
@@ -533,8 +625,13 @@
   nextButton.addEventListener('click', () => { nextSlide(); resetAutoPlay(); });
   prevButton.addEventListener('click', () => { prevSlide(); resetAutoPlay(); });
 
-  updateSlidePosition(); // Set initial state
-  startAutoPlay();
+  let resizeTimeout;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => centerOn(realSlides[currentIndex], false), 150);
+  });
+
+  setActive(0, false); // Set initial state without animating  startAutoPlay();
 </script>
 
 </body>
