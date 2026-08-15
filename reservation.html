@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Location — SauSaWrap</title>
+<title>Reservation — SauSaWrap</title>
 <link rel="icon" href="assets/menu/favicon.png?v=2" type="image/png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -27,8 +27,8 @@
       <li><a href="index.html#home">Home</a></li>
       <li><a href="about.html">About</a></li>
       <li><a href="menu.html">Menu</a></li>
-      <li><a href="location.html" class="current">Location</a></li>
-      <li><a href="reservation.html">Reserve</a></li>
+      <li><a href="location.html">Location</a></li>
+      <li><a href="reservation.html" class="current">Reserve</a></li>
       <li><a href="gallery.html">Gallery</a></li>
       <li><a href="promotions.html">Promos</a></li>
       <li><a href="faq.html">FAQ</a></li>
@@ -38,35 +38,75 @@
   <div class="nav-overlay" id="navOverlay"></div>
 </header>
 
-<!-- ================= LOCATION ================= -->
-<section id="location" class="wrap" style="padding-top: 50px;">
-  <h2 class="section-title">Find us in Gen. T. De Leon</h2>
-  <div class="loc-grid">
-    <div data-reveal>
-      <div class="info-line">
-        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="#26100A" stroke-width="2"><path d="M12 21s7-7.2 7-12a7 7 0 1 0-14 0c0 4.8 7 12 7 12z"/><circle cx="12" cy="9" r="2.5"/></svg>
-        <div><strong>Address</strong><br>5031 Gen. T. De Leon, Valenzuela City</div>
+<!-- ================= RESERVATION ================= -->
+<section id="reservation" class="wrap" style="padding-top: 50px;">
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="index.html#home">Home</a>
+    <span class="sep">›</span>
+    <span class="current">Reservation</span>
+  </nav>
+
+  <div class="res-head" data-reveal>
+    <h1>Request a Reservation</h1>
+    <p>Select your details and we'll try to get the best table ready for you.</p>
+  </div>
+
+  <form class="res-card" id="reservationForm" data-reveal novalidate>
+    <div class="res-row cols-3">
+      <div class="field">
+        <label for="resName">Full name</label>
+        <input type="text" id="resName" name="name" placeholder="Juan Dela Cruz" autocomplete="name" required>
       </div>
-      <div class="info-line">
-        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="#26100A" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
-        <div><strong>Hours</strong><br>8:00 AM – 8:00 PM, daily</div>
+      <div class="field">
+        <label for="resPhone">Phone number</label>
+        <input type="tel" id="resPhone" name="phone" placeholder="09XX XXX XXXX" autocomplete="tel" required>
       </div>
-      <div class="info-line">
-        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="#26100A" stroke-width="2"><path d="M3 11l18-7-7 18-2-8-9-3z"/></svg>
-        <div><strong>Nearby Landmarks</strong>
-          <ul class="landmark-list">
-            <li>Our Lady of Lourdes College</li>
-            <li>Metrobank Gen T. De Leon</li>
-            <li>Don Benito's</li>
-          </ul>
+      <div class="field">
+        <label for="resEmail">Email</label>
+        <input type="email" id="resEmail" name="email" placeholder="juan@email.com" autocomplete="email" required>
+      </div>
+    </div>
+
+    <div class="res-row cols-3">
+      <div class="field">
+        <label for="resParty">Party size</label>
+        <div class="field-wrap">
+          <select id="resParty" name="party" required>
+            <option value="1">1 guest</option>
+            <option value="2" selected>2 guests</option>
+            <option value="3">3 guests</option>
+            <option value="4">4 guests</option>
+            <option value="5">5 guests</option>
+            <option value="6">6 guests</option>
+            <option value="7">7 guests</option>
+            <option value="8">8 guests</option>
+            <option value="9+">9+ guests (please call us)</option>
+          </select>
         </div>
       </div>
-      <a href="https://goo.gl/maps/eJH5UtC2V7T9HY386?g_st=ac" target="_blank" rel="noopener" class="btn btn-primary">Get Directions</a>
+      <div class="field">
+        <label for="resDate">Date</label>
+        <input type="date" id="resDate" name="date" required>
+      </div>
+      <div class="field">
+        <label for="resTime">Time</label>
+        <div class="field-wrap">
+          <select id="resTime" name="time" required></select>
+        </div>
+      </div>
     </div>
-    <div class="map-frame" data-reveal>
-     <iframe src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d3859.446992788728!2d120.9953460751078!3d14.687295985809412!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMTTCsDQxJzE0LjMiTiAxMjDCsDU5JzUyLjUiRQ!5e0!3m2!1sen!2sph!4v1785379898111!5m2!1sen!2sph" width="450" height="250" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+
+    <hr class="res-divider">
+
+    <p class="slot-label">Choose an available time slot:</p>
+    <div class="slot-grid" id="slotGrid" role="group" aria-label="Available time slots"></div>
+
+    <div class="res-submit">
+      <button type="submit" class="btn btn-primary">Request Now</button>
+      <p class="res-status" id="resStatus" role="status" aria-live="polite"></p>
+      <p class="res-note">We'll email you a confirmation and get back to you to confirm availability. Prefer to talk? Call <a href="tel:09093526154" style="color:var(--strawberry); font-weight:700;">0909 352 6154</a>.</p>
     </div>
-  </div>
+  </form>
 </section>
 
 <!-- ================= CONTACT / FOOTER ================= -->
@@ -98,6 +138,7 @@
   </div>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js" defer></script>
 <script src="assets/js/main.js" defer></script>
 
 </body>

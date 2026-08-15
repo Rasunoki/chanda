@@ -7,159 +7,15 @@
 <link rel="icon" href="assets/menu/favicon.png?v=2" type="image/png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bungee&family=Space+Mono:wght@400;700&family=Work+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --cream:#F2E5C4;
-    --paper:#FBF6E9;
-    --brown:#3B2418;
-    --brown-soft:#5C3A26;
-    --red:#C6401F;
-    --sage:#6E7A46;
-    --amber:#E1922F;
-    --line: rgba(59,36,24,0.18);
-    --radius: 4px;
-  }
-  *{box-sizing:border-box;}
-  html{scroll-behavior:smooth;}
-  @media (prefers-reduced-motion: reduce){
-    html{scroll-behavior:auto;}
-    *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important;}
-  }
-  body{
-    margin:0;
-    background:var(--cream);
-    color:var(--brown);
-    font-family:'Work Sans', sans-serif;
-    font-size:16px;
-    line-height:1.55;
-  }
-  h1,h2,h3,.display{
-    font-family:'Bungee', sans-serif;
-    font-weight:400;
-    letter-spacing:0.5px;
-    line-height:1.15;
-    color:var(--brown);
-  }
-  .mono{font-family:'Space Mono', monospace;}
-  a{color:inherit;}
-  img,svg{display:block; max-width:100%;}
-  .wrap{max-width:1120px; margin:0 auto; padding:0 24px;}
-  section{padding:88px 0;}
-  .eyebrow{
-    font-family:'Space Mono', monospace;
-    text-transform:uppercase;
-    letter-spacing:2px;
-    font-size:0.78rem;
-    color:var(--red);
-    margin:0 0 12px;
-  }
-  .section-title{font-size:clamp(1.8rem,4vw,2.6rem); margin:0 0 8px;}
-  .section-sub{max-width:620px; color:var(--brown-soft); margin:0 0 40px; font-size:1.02rem;}
-  :focus-visible{outline:3px solid var(--red); outline-offset:3px;}
-
-  /* ---------- NAV ---------- */
-  header{
-    position:sticky; top:0; z-index:50;
-    background:rgba(242,229,196,0.98);
-    border-bottom:2px solid var(--brown);
-  }
-  nav{
-    max-width:1120px; margin:0 auto; padding:14px 24px;
-    display:flex; align-items:center; justify-content:space-between;
-  }
-  .logo{
-    display:flex; align-items:center; gap:10px;
-    font-family:'Bungee', sans-serif; font-size:1.25rem; text-decoration:none;
-  }
-  .logo .dot{width:10px; height:10px; border-radius:50%; background:var(--red); display:inline-block;}
-  .nav-links{display:flex; gap:26px; list-style:none; margin:0; padding:0; font-size:0.92rem; font-weight:600;}
-  .nav-links a{text-decoration:none; padding:6px 2px; border-bottom:2px solid transparent;}
-  .nav-links a:hover{border-color:var(--red);}
-  .nav-links a.current{border-color:var(--red); color:var(--red);}
-  .nav-toggle{
-    display:none; background:none; border:2px solid var(--brown); border-radius:var(--radius);
-    width:44px; height:44px; padding:0; cursor:pointer;
-    align-items:center; justify-content:center;
-  }
-  .hamburger{position:relative; width:20px; height:14px;}
-  .hamburger span{
-    position:absolute; left:0; width:100%; height:2px; background:var(--brown); border-radius:2px;
-    transition:transform .25s ease, opacity .2s ease, top .25s ease;
-  }
-  .hamburger span:nth-child(1){top:0;}
-  .hamburger span:nth-child(2){top:6px;}
-  .hamburger span:nth-child(3){top:12px;}
-  .nav-toggle.open .hamburger span:nth-child(1){top:6px; transform:rotate(45deg);}
-  .nav-toggle.open .hamburger span:nth-child(2){opacity:0;}
-  .nav-toggle.open .hamburger span:nth-child(3){top:6px; transform:rotate(-45deg);}
-  @media (max-width:820px){
-    .nav-links{
-      position:fixed; top:0; right:0; bottom:0; left:auto; width:78%; max-width:320px;
-      background:var(--paper); border-left:2px solid var(--brown); border-bottom:none;
-      flex-direction:column; gap:0; padding-top:70px;
-      overflow-y:auto; -webkit-overflow-scrolling:touch;
-      max-height:none;
-      transform:translateX(100%);
-      transition:transform .28s ease;
-      box-shadow:-8px 0 0 var(--brown);
-      z-index:60;
-    }
-    .nav-links.open{transform:translateX(0);}
-    .nav-links a{display:block; padding:16px 24px; border-bottom:1px solid var(--line);}
-    .nav-toggle{display:flex; position:relative; z-index:70;}
-    body.nav-open{overflow:hidden;}
-    .nav-overlay{
-      display:none; position:fixed; inset:0; background:rgba(59,36,24,0.45);
-      z-index:55;
-    }
-    .nav-overlay.open{display:block;}
-  }
-  @media (min-width:821px){ .nav-overlay{display:none;} }
-
-  /* ---------- ABOUT ---------- */
-  .about-grid{display:grid; grid-template-columns:1fr 1fr; gap:48px;}
-  @media (max-width:880px){.about-grid{grid-template-columns:1fr;}}
-  .pillar{background:var(--paper); border:2px solid var(--brown); border-radius:var(--radius); padding:22px 24px; margin-bottom:18px;}
-  .pillar h3{font-size:1.05rem; margin:0 0 8px; font-family:'Work Sans',sans-serif; font-weight:800; text-transform:uppercase; letter-spacing:1px; color:var(--red);}
-  .pillar p{margin:0; font-size:0.95rem;}
-  .name-story{
-    background:var(--brown); color:var(--cream); border-radius:var(--radius); padding:30px 28px; margin-top:20px;
-  }
-  .name-story h3{color:var(--amber); font-family:'Bungee',sans-serif; font-size:1.1rem; margin:0 0 12px;}
-  .name-story p{font-size:0.92rem; color:#EFE2C0; margin:0 0 10px;}
-  .name-diagram{display:flex; align-items:center; gap:10px; font-family:'Bungee',sans-serif; font-size:1.4rem; margin:0 0 16px; flex-wrap:wrap;}
-  .name-diagram span.plus{color:var(--amber);}
-  .name-diagram .sauce{color:var(--amber);}
-  .name-diagram .wrapword{color:var(--red);}
-
-  /* ---------- WHY US ---------- */
-  .why-grid{display:grid; grid-template-columns:1fr 1fr; gap:32px;}
-  @media (max-width:820px){.why-grid{grid-template-columns:1fr;}}
-  .why-card{
-    border:2px solid var(--brown); border-radius:var(--radius); padding:28px;
-    background:var(--paper); position:relative; overflow:hidden;
-  }
-  .why-card .num{font-family:'Bungee',sans-serif; font-size:2.4rem; color:var(--red); opacity:0.9; margin:0 0 10px;}
-
-  /* ---------- CONTACT / FOOTER ---------- */
-  footer{background:var(--brown); color:var(--cream); padding:70px 0 30px; margin-top:88px;}
-  .footer-grid{display:grid; grid-template-columns:1.2fr 1fr 1fr; gap:40px;}
-  @media (max-width:780px){.footer-grid{grid-template-columns:1fr; gap:32px;}}
-  footer h3{color:var(--amber); font-size:1.4rem; margin:0 0 12px;}
-  footer p{color:#D8C7A0; font-size:0.92rem; max-width:340px;}
-  .contact-list{list-style:none; margin:0; padding:0;}
-  .contact-list li{margin-bottom:14px; font-size:0.95rem;}
-  .contact-list .lbl{display:block; font-family:'Space Mono',monospace; font-size:0.72rem; text-transform:uppercase; letter-spacing:1px; color:var(--amber); margin-bottom:3px;}
-  .social-row{display:flex; gap:12px; margin-top:6px;}
-  .social-row a{
-    width:38px; height:38px; border:2px solid var(--cream); border-radius:50%;
-    display:flex; align-items:center; justify-content:center; font-family:'Space Mono',monospace; font-size:0.8rem; text-decoration:none;
-  }
-  .fine{border-top:1px solid rgba(242,229,196,0.25); margin-top:50px; padding-top:22px; font-size:0.8rem; color:#B79E72; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;}
-</style>
+<link rel="preconnect" href="https://fonts.cdnfonts.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Work+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.cdnfonts.com/css/taco-crispy" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
+
+<div class="scroll-progress"></div>
+<div class="ambient-glow" aria-hidden="true"><span></span><span></span><span></span></div>
 
 <header>
   <nav>
@@ -172,6 +28,7 @@
       <li><a href="about.html" class="current">About</a></li>
       <li><a href="menu.html">Menu</a></li>
       <li><a href="location.html">Location</a></li>
+      <li><a href="reservation.html">Reserve</a></li>
       <li><a href="gallery.html">Gallery</a></li>
       <li><a href="promotions.html">Promos</a></li>
       <li><a href="faq.html">FAQ</a></li>
@@ -189,7 +46,7 @@
   </div>
 
   <div class="about-grid">
-    <div>
+    <div data-reveal-group>
       <div class="pillar">
         <h3>Mission</h3>
         <p>Our passion is to serve quality food products, quick service, and a fun-dining experience that brings satisfaction to the faces of Valenzuelanos every season of the year.</p>
@@ -205,7 +62,7 @@
     </div>
 
     <div>
-      <div class="name-story">
+      <div class="name-story" data-reveal>
         <div class="name-diagram"><span class="sauce">Sauce</span><span class="plus">+</span><span class="wrapword">Wrap</span></div>
         <h3>Story Behind the Name</h3>
         <p>"SauSa" highlights the flavorful sauces that enhance every meal, while "Wrap" reflects the convenient burrito or shawarma-style presentation. SauSaWrap transforms familiar Filipino comfort food into a portable meal — easy to eat anytime, anywhere.</p>
@@ -223,7 +80,7 @@
 <section id="why-us" class="wrap">
   <p class="eyebrow">Products &amp; Features</p>
   <h2 class="section-title">Why SauSaWrap over the rest?</h2>
-  <div class="why-grid">
+  <div class="why-grid" data-reveal-group>
     <div class="why-card">
       <p class="num">01</p>
       <h3 style="font-family:'Work Sans'; font-size:1.1rem; font-weight:800; margin:0 0 8px;">Build Your Own Wrap</h3>
@@ -252,7 +109,7 @@
       </ul>
     </div>
     <div>
-      <span class="lbl mono" style="color:var(--amber); font-family:'Space Mono',monospace; text-transform:uppercase; font-size:0.72rem; letter-spacing:1px;">Follow along</span>
+      <span class="social-label">Follow along</span>
       <div class="social-row">
         <a href="https://www.facebook.com/share/1DFVjFvxrw/" target="_blank" rel="noopener" aria-label="Facebook">FB</a>
         <a href="https://www.instagram.com/elevate_sausawrap?igsh=MWM5M3h4OTd3aGptaQ==" target="_blank" rel="noopener" aria-label="Instagram">IG</a>
@@ -266,43 +123,7 @@
   </div>
 </footer>
 
-<script>
-  // mobile nav toggle
-  const navToggle = document.getElementById('navToggle');
-  const navLinks = document.getElementById('navLinks');
-  const navOverlay = document.getElementById('navOverlay');
-
-  function openNav(){
-    navLinks.classList.add('open');
-    navOverlay.classList.add('open');
-    navToggle.classList.add('open');
-    navToggle.setAttribute('aria-expanded', 'true');
-    document.body.classList.add('nav-open');
-  }
-  function closeNav(){
-    navLinks.classList.remove('open');
-    navOverlay.classList.remove('open');
-    navToggle.classList.remove('open');
-    navToggle.setAttribute('aria-expanded', 'false');
-    document.body.classList.remove('nav-open');
-  }
-  navToggle.addEventListener('click', () => {
-    navLinks.classList.contains('open') ? closeNav() : openNav();
-  });
-  navOverlay.addEventListener('click', closeNav);
-  navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', closeNav));
-
-  // See More Toggle
-  const expandableText = document.getElementById('about-text');
-  if (expandableText) {
-    const seeMoreBtn = expandableText.querySelector('.btn-see-more');
-    seeMoreBtn.addEventListener('click', () => {
-      const isExpanded = expandableText.classList.toggle('expanded');
-      seeMoreBtn.textContent = isExpanded ? 'See Less' : 'See More';
-    });
-  }
-
-</script>
+<script src="assets/js/main.js" defer></script>
 
 </body>
 </html>
