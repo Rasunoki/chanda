@@ -400,7 +400,7 @@ nav{
   display:block; font-family:'Space Mono',monospace; text-transform:uppercase; letter-spacing:1px;
   font-size:0.72rem; color:var(--ink-soft); margin-bottom:8px;
 }
-.field input[type="text"], .field input[type="tel"], .field input[type="date"], .field select{
+.field input[type="text"], .field input[type="tel"], .field input[type="email"], .field input[type="date"], .field select{
   width:100%; font-family:'Work Sans',sans-serif; font-size:1rem; color:var(--ink);
   border:2px solid var(--ink); border-radius:var(--radius); padding:12px 14px;
   background:var(--paper);
