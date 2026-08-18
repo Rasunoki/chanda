@@ -6,14 +6,33 @@ document.documentElement.classList.add('js-ready');
    Fill these in from your EmailJS dashboard, then the reservation
    form will email both SauSaWrap and the customer automatically.
    Until they're filled in, the form falls back to a mailto: draft. */
-const EMAILJS_PUBLIC_KEY = 'YOUR_PUBLIC_KEY';
-const EMAILJS_SERVICE_ID = 'YOUR_SERVICE_ID';
-const EMAILJS_BUSINESS_TEMPLATE_ID = 'YOUR_BUSINESS_TEMPLATE_ID';
-const EMAILJS_CUSTOMER_TEMPLATE_ID = 'YOUR_CUSTOMER_TEMPLATE_ID';
+const EMAILJS_PUBLIC_KEY = '_JzZ7MguyczisMG0u';
+const EMAILJS_SERVICE_ID = 'service_yjvibr8';
+const EMAILJS_BUSINESS_TEMPLATE_ID = 'template_i047pue';
+const EMAILJS_CUSTOMER_TEMPLATE_ID = 'template_tcnj4bl';
 const emailjsIsConfigured = EMAILJS_PUBLIC_KEY.indexOf('YOUR_') !== 0;
 
 if (emailjsIsConfigured && typeof emailjs !== 'undefined') {
   emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+}
+
+/* ---------- Toast notifications ---------- */
+function showToast(message, type) {
+  let toast = document.querySelector('.toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.setAttribute('role', 'status');
+    toast.setAttribute('aria-live', 'polite');
+    toast.innerHTML = '<span class="toast-icon"></span><span class="toast-msg"></span>';
+    document.body.appendChild(toast);
+  }
+  toast.querySelector('.toast-icon').textContent = type === 'error' ? '!' : '✓';
+  toast.querySelector('.toast-msg').textContent = message;
+  toast.classList.toggle('error', type === 'error');
+  toast.classList.add('show');
+  clearTimeout(toast._hideTimer);
+  toast._hideTimer = setTimeout(() => toast.classList.remove('show'), 5500);
 }
 
 /* ---------- Mobile nav toggle ---------- */
@@ -231,6 +250,7 @@ if (reservationForm) {
     // still goes somewhere instead of silently doing nothing.
     if (!emailjsIsConfigured || typeof emailjs === 'undefined') {
       sendViaMailto();
+      showToast('Opening your email app — hit send there to submit your request.', 'success');
       return;
     }
 
@@ -254,12 +274,14 @@ if (reservationForm) {
       emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_CUSTOMER_TEMPLATE_ID, params)
     ]).then(() => {
       setStatus('Request sent! Check ' + emailInput.value + ' for your confirmation.', false);
+      showToast('Reservation request sent! Check your email for confirmation.', 'success');
       reservationForm.reset();
       dateInput.value = todayStr();
       refreshAll();
     }).catch((err) => {
       console.error('EmailJS error', err);
       setStatus('Something went wrong sending that automatically — opening your email app instead.', true);
+      showToast('Could not send automatically — opening your email app instead.', 'error');
       sendViaMailto();
     }).finally(() => {
       submitBtn.disabled = false;
