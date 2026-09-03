@@ -422,3 +422,162 @@ if (viewport && track && track.children.length) {
   setActive(0, false); // set initial state without animating
   startAutoPlay();
 }
+
+/* ---------- Photo lightbox (menu + gallery) ---------- */
+const lightboxItems = [];
+
+const registerPhoto = (el, src, caption, group) => {
+  if (!src) return;
+  const item = { el, src, caption, group, index: lightboxItems.length };
+  lightboxItems.push(item);
+  el.classList.add('zoomable');
+  el.setAttribute('role', 'button');
+  el.setAttribute('tabindex', '0');
+  el.setAttribute('aria-label', 'View ' + caption + ' larger');
+  el.addEventListener('click', () => openLightbox(item));
+  el.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      openLightbox(item);
+    }
+  });
+};
+
+// Gallery tiles: the whole tile opens, captioned by its label.
+document.querySelectorAll('.g-tile.has-photo').forEach(tile => {
+  const img = tile.querySelector('img');
+  const label = tile.querySelector('.label');
+  const grid = tile.closest('.gallery-grid');
+  registerPhoto(tile, img && img.getAttribute('src'), label ? label.textContent.trim() : 'photo', grid);
+});
+
+// Menu tickets: the photo opens, captioned by the item name and price.
+document.querySelectorAll('.ticket .ticket-photo').forEach(photo => {
+  const ticket = photo.closest('.ticket');
+  const name = ticket.querySelector('h3');
+  const price = ticket.querySelector('.price');
+  const caption = (name ? name.textContent.trim() : 'Menu item') + (price ? ' · ' + price.textContent.trim() : '');
+  registerPhoto(photo, photo.getAttribute('src'), caption, photo.closest('.menu-grid'));
+});
+
+const menuHero = document.querySelector('.menu-hero');
+if (menuHero) registerPhoto(menuHero, menuHero.getAttribute('src'), 'The three signature wraps', menuHero);
+
+if (lightboxItems.length) {
+  const box = document.createElement('div');
+  box.className = 'lightbox';
+  box.setAttribute('role', 'dialog');
+  box.setAttribute('aria-modal', 'true');
+  box.setAttribute('aria-label', 'Photo viewer');
+  box.innerHTML =
+    '<button class="lb-btn lb-close" type="button" aria-label="Close">&times;</button>' +
+    '<button class="lb-btn lb-nav lb-prev" type="button" aria-label="Previous photo">&#8249;</button>' +
+    '<button class="lb-btn lb-nav lb-next" type="button" aria-label="Next photo">&#8250;</button>' +
+    '<figure class="lb-figure"><img class="lb-img" alt=""><figcaption class="lb-cap">' +
+    '<span class="lb-cap-text"></span><span class="lb-count"></span></figcaption></figure>';
+  document.body.appendChild(box);
+
+  const lbImg = box.querySelector('.lb-img');
+  const lbCapText = box.querySelector('.lb-cap-text');
+  const lbCount = box.querySelector('.lb-count');
+  const lbFigure = box.querySelector('.lb-figure');
+  let current = null;
+  let lastFocused = null;
+
+  // Arrows step through the photos sharing a group (one grid / one section).
+  const siblings = (item) => lightboxItems.filter(o => o.group === item.group);
+
+  const show = (item, direction) => {
+    current = item;
+    const set = siblings(item);
+    const pos = set.indexOf(item);
+    lbImg.src = item.src;
+    lbImg.alt = item.caption;
+    lbCapText.textContent = item.caption;
+    lbCount.textContent = set.length > 1 ? (pos + 1) + ' / ' + set.length : '';
+    box.classList.toggle('solo', set.length < 2);
+    lbFigure.classList.remove('pop', 'from-left', 'from-right');
+    void lbFigure.offsetWidth; // restart the entrance animation
+    lbFigure.classList.add(direction === 'prev' ? 'from-left' : direction === 'next' ? 'from-right' : 'pop');
+  };
+
+  const step = (delta) => {
+    if (!current) return;
+    const set = siblings(current);
+    const next = set[(set.indexOf(current) + delta + set.length) % set.length];
+    show(next, delta > 0 ? 'next' : 'prev');
+  };
+
+  window.openLightbox = (item) => {
+    lastFocused = document.activeElement;
+    show(item);
+    box.classList.add('open');
+    document.body.classList.add('lb-open'); // lock page scroll behind the viewer
+    box.querySelector('.lb-close').focus();
+  };
+
+  const closeLightbox = () => {
+    box.classList.remove('open');
+    document.body.classList.remove('lb-open');
+    current = null;
+    if (lastFocused) lastFocused.focus();
+  };
+
+  box.querySelector('.lb-close').addEventListener('click', closeLightbox);
+  box.querySelector('.lb-prev').addEventListener('click', () => step(-1));
+  box.querySelector('.lb-next').addEventListener('click', () => step(1));
+  box.addEventListener('click', (e) => { if (e.target === box) closeLightbox(); });
+
+  document.addEventListener('keydown', (e) => {
+    if (!box.classList.contains('open')) return;
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowLeft') step(-1);
+    if (e.key === 'ArrowRight') step(1);
+  });
+
+  // Swipe left/right on touch.
+  let touchX = null;
+  box.addEventListener('touchstart', (e) => { touchX = e.changedTouches[0].clientX; }, { passive: true });
+  box.addEventListener('touchend', (e) => {
+    if (touchX === null) return;
+    const dx = e.changedTouches[0].clientX - touchX;
+    if (Math.abs(dx) > 50) step(dx < 0 ? 1 : -1);
+    touchX = null;
+  }, { passive: true });
+}
+
+/* ---------- Homepage intro animation ---------- */
+const heroPhoto = document.querySelector('.hero-art .hero-photo');
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+let introAlreadyPlayed = false;
+try { introAlreadyPlayed = sessionStorage.getItem('sw-intro-played') === '1'; } catch (e) {}
+
+if (heroPhoto && !introAlreadyPlayed && !prefersReducedMotion) {
+  const veil = document.createElement('div');
+  veil.className = 'intro-veil';
+  veil.setAttribute('aria-hidden', 'true');
+  veil.innerHTML = '<div class="intro-shadow"></div><div class="intro-plate"><img src="' +
+    heroPhoto.getAttribute('src') + '" alt=""></div>';
+  document.body.appendChild(veil);
+  document.body.classList.add('intro-lock');
+
+  let ended = false;
+  const endIntro = () => {
+    if (ended) return;
+    ended = true;
+    veil.remove();
+    document.body.classList.remove('intro-lock');
+    try { sessionStorage.setItem('sw-intro-played', '1'); } catch (e) {}
+    ['click', 'keydown', 'wheel', 'touchstart'].forEach(ev =>
+      window.removeEventListener(ev, endIntro));
+  };
+
+  // Skip on any interaction, and always clear it once the roll-off finishes.
+  ['click', 'keydown', 'wheel', 'touchstart'].forEach(ev =>
+    window.addEventListener(ev, endIntro, { passive: true }));
+  veil.addEventListener('animationend', (e) => {
+    if (e.animationName === 'intro-veil-out') endIntro();
+  });
+  setTimeout(endIntro, 3000); // safety net if the animation never fires
+}

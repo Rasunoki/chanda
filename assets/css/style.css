@@ -292,9 +292,15 @@ nav{
   object-fit:contain; background:var(--paper); padding:14px;
 }
 @media (max-width:1000px){
+  /* keep the intro side by side, just shrink the photo — stacking it here
+     left a dead block of space beside the picture */
   .menu-grid{grid-template-columns:1fr 1fr;}
-  .menu-intro{grid-template-columns:1fr; gap:28px;}
-  .menu-hero{max-width:420px;}
+  .menu-intro{gap:30px;}
+  .menu-hero{max-width:270px;}
+}
+@media (max-width:700px){
+  .menu-intro{grid-template-columns:1fr; gap:22px;}
+  .menu-hero{max-width:min(100%, 380px); justify-self:start;}
 }
 @media (max-width:600px){
   .menu-grid{grid-template-columns:1fr;}
@@ -589,3 +595,169 @@ footer p{color:#F1D9CB; font-size:0.92rem; max-width:340px;}
   border:none; padding:0;
 }
 .carousel-dot.active { background: var(--strawberry); transform:scale(1.2); }
+
+/* ---------- ZOOMABLE PHOTOS + LIGHTBOX ---------- */
+body.lb-open{ overflow:hidden; }
+.zoomable{ cursor:zoom-in; }
+.zoomable:active{ transform:scale(0.97); }
+img.ticket-photo.zoomable{ transition:transform .18s ease, box-shadow .18s ease; }
+img.ticket-photo.zoomable:hover{ transform:rotate(-1deg) scale(1.02); box-shadow:5px 5px 0 var(--yuzu); }
+.menu-hero.zoomable{ transition:transform .2s ease, box-shadow .2s ease; }
+.menu-hero.zoomable:hover{ transform:translate(-3px,-3px) rotate(1deg); box-shadow:11px 11px 0 var(--strawberry); }
+.g-tile.has-photo.zoomable::after{
+  content:"TAP TO ZOOM"; position:absolute; right:10px; bottom:10px; z-index:2;
+  font-family:'Space Mono',monospace; font-size:0.6rem; letter-spacing:1px;
+  background:var(--yuzu); color:var(--ink); border:2px solid var(--ink); border-radius:999px;
+  padding:4px 9px; opacity:0; transform:translateY(6px) rotate(-3deg);
+  transition:opacity .18s ease, transform .18s ease; pointer-events:none;
+}
+.g-tile.has-photo.zoomable:hover::after,
+.g-tile.has-photo.zoomable:focus-visible::after{ opacity:1; transform:translateY(0) rotate(-3deg); }
+.g-tile.has-photo.zoomable:hover img{ transform:scale(1.05); }
+.g-tile.has-photo.zoomable img{ transition:transform .35s ease; }
+.g-tile.has-photo.zoomable:active{ transform:translate(-2px,-2px) scale(0.99); }
+
+.lightbox{
+  position:fixed; inset:0; z-index:200; display:none;
+  align-items:center; justify-content:center; padding:40px 20px;
+  background:rgba(38,16,10,0.82); backdrop-filter:blur(4px);
+}
+.lightbox.open{ display:flex; animation:lb-fade .18s ease; }
+@keyframes lb-fade{ from{opacity:0;} to{opacity:1;} }
+.lb-figure{ margin:0; max-width:min(1100px, 92vw); display:flex; flex-direction:column; align-items:center; gap:16px; }
+.lb-img{
+  display:block; max-width:100%; max-height:74vh; object-fit:contain;
+  background:var(--paper); border:3px solid var(--ink); border-radius:var(--radius);
+  box-shadow:10px 10px 0 var(--strawberry);
+}
+.lb-cap{
+  display:flex; align-items:center; gap:12px; flex-wrap:wrap; justify-content:center;
+  background:var(--paper); border:2px solid var(--ink); border-radius:999px; padding:8px 18px;
+  font-family:'Work Sans',sans-serif; font-weight:700; font-size:0.85rem; color:var(--ink);
+}
+.lb-count{ font-family:'Space Mono',monospace; font-size:0.72rem; color:var(--strawberry); }
+.lb-btn{
+  position:absolute; background:var(--paper); border:2px solid var(--ink); border-radius:50%;
+  width:52px; height:52px; font-size:1.5rem; line-height:1; cursor:pointer; color:var(--ink);
+  display:flex; align-items:center; justify-content:center;
+  transition:transform .18s ease, background .18s ease;
+}
+.lb-btn:hover{ background:var(--yuzu); transform:scale(1.1); }
+.lb-close{ top:20px; right:20px; }
+.lb-prev{ left:20px; top:50%; transform:translateY(-50%); }
+.lb-next{ right:20px; top:50%; transform:translateY(-50%); }
+.lb-prev:hover,.lb-next:hover{ transform:translateY(-50%) scale(1.1); }
+.lightbox.solo .lb-nav{ display:none; }
+.lb-figure.pop{ animation:lb-pop .28s cubic-bezier(.2,1.3,.4,1); }
+.lb-figure.from-right{ animation:lb-in-right .26s ease; }
+.lb-figure.from-left{ animation:lb-in-left .26s ease; }
+@keyframes lb-pop{ from{ transform:scale(0.88) rotate(-2deg); opacity:0; } to{ transform:scale(1) rotate(0); opacity:1; } }
+@keyframes lb-in-right{ from{ transform:translateX(40px); opacity:0; } to{ transform:translateX(0); opacity:1; } }
+@keyframes lb-in-left{ from{ transform:translateX(-40px); opacity:0; } to{ transform:translateX(0); opacity:1; } }
+@media (max-width:600px){
+  .lb-btn{ width:44px; height:44px; }
+  .lb-prev{ left:8px; } .lb-next{ right:8px; } .lb-close{ top:10px; right:10px; }
+}
+@media (prefers-reduced-motion:reduce){
+  .lb-figure.pop, .lb-figure.from-right, .lb-figure.from-left{ animation:none; }
+  .zoomable:active, .g-tile.has-photo.zoomable:hover img,
+  img.ticket-photo.zoomable:hover, .menu-hero.zoomable:hover{ transform:none; }
+}
+
+/* ---------- HOMEPAGE INTRO (plate drops in, then rolls off right) ---------- */
+body.intro-lock{ overflow:hidden; }
+.intro-veil{
+  position:fixed; inset:0; z-index:300; overflow:hidden;
+  background:radial-gradient(circle at 50% 45%, var(--paper), var(--cream) 70%);
+  animation:intro-veil-out .4s ease 1.3s forwards;
+}
+.intro-plate{
+  position:absolute; left:50%; top:46%; width:min(66vw, 440px); aspect-ratio:1/1;
+  border-radius:50%; border:3px solid var(--ink);
+  background:radial-gradient(circle at 35% 30%, var(--paper), var(--cream) 70%);
+  display:flex; align-items:center; justify-content:center;
+  transform:translate(-50%,-230%);
+  animation:intro-drop-roll 1.8s forwards;
+}
+.intro-plate::after{
+  content:""; position:absolute; inset:14px; border:2px dashed var(--line); border-radius:50%;
+}
+.intro-plate img{ width:118%; object-fit:contain; position:relative; z-index:1; }
+.intro-shadow{
+  position:absolute; left:50%; top:46%; width:min(52vw, 340px); height:26px;
+  margin-top:min(33vw, 222px); border-radius:50%;
+  background:rgba(38,16,10,0.18); filter:blur(7px);
+  transform:translate(-50%,-50%) scaleX(0.2); opacity:0;
+  animation:intro-shadow 1.8s forwards;
+}
+@keyframes intro-drop-roll{
+  0%   { transform:translate(-50%,-230%) rotate(-28deg); animation-timing-function:cubic-bezier(.5,.02,.78,.5); }
+  20%  { transform:translate(-50%,-50%) rotate(0deg); animation-timing-function:ease-out; }
+  26%  { transform:translate(-50%,-43%) rotate(2deg) scale(1.08,0.9); animation-timing-function:ease-out; }
+  34%  { transform:translate(-50%,-66%) rotate(9deg) scale(0.97,1.05); animation-timing-function:ease-in; }
+  42%  { transform:translate(-50%,-50%) rotate(16deg) scale(1); animation-timing-function:cubic-bezier(.4,0,.75,1); }
+  100% { transform:translate(calc(-50% + 130vw),-50%) rotate(790deg); }
+}
+@keyframes intro-shadow{
+  0%   { opacity:0; transform:translate(-50%,-50%) scaleX(0.25); }
+  20%  { opacity:1; transform:translate(-50%,-50%) scaleX(1.1); animation-timing-function:ease-out; }
+  34%  { opacity:.45; transform:translate(-50%,-50%) scaleX(0.75); animation-timing-function:ease-in; }
+  42%  { opacity:1; transform:translate(-50%,-50%) scaleX(1); animation-timing-function:cubic-bezier(.4,0,.75,1); }
+  100% { opacity:0; transform:translate(calc(-50% + 130vw),-50%) scaleX(1); }
+}
+@keyframes intro-veil-out{ to{ opacity:0; visibility:hidden; } }
+@media (prefers-reduced-motion:reduce){ .intro-veil{ display:none; } }
+
+/* ---------- RESPONSIVE / MOBILE ---------- */
+.logo-img{ height:140px; }
+/* keep in-page anchors clear of the sticky header */
+[id]{ scroll-margin-top:96px; }
+
+@media (max-width:1100px){
+  html{ font-size:20px; }
+  .logo-img{ height:112px; }
+}
+
+@media (max-width:820px){
+  html{ font-size:18px; }
+  .wrap{ padding:0 22px; }
+  section{ padding:56px 0; }
+  nav{ padding:10px 22px; }
+  .logo-img{ height:80px; }
+  [id]{ scroll-margin-top:80px; }
+  .section-sub{ margin-bottom:28px; }
+  .hero p.tagline{ font-size:1.02rem; }
+  .cta-row .btn{ flex:1 1 auto; justify-content:center; }
+  /* comfortable tap targets */
+  .nav-links a{ padding:15px 24px; }
+  .social-row a{ width:44px; height:44px; }
+  .jump-nav a, .chip{ padding:10px 16px; }
+  .faq-q{ padding-top:16px; padding-bottom:16px; }
+  /* 16px+ keeps iOS from zooming in on focus */
+  .field input[type="text"], .field input[type="tel"], .field input[type="email"],
+  .field input[type="date"], .field select, .slot{ font-size:16px; }
+  .slot{ padding:14px 6px; }
+}
+
+@media (max-width:520px){
+  html{ font-size:17px; }
+  .wrap{ padding:0 18px; }
+  section{ padding:44px 0; }
+  nav{ padding:8px 18px; }
+  .logo-img{ height:62px; }
+  [id]{ scroll-margin-top:66px; }
+  .section-title{ font-size:clamp(1.6rem,7vw,2.1rem); }
+  .btn{ padding:13px 20px; font-size:0.86rem; }
+  .cta-row{ gap:10px; }
+  .fine{ justify-content:flex-start; }
+  .footer-grid{ gap:26px; }
+}
+
+/* Touch devices get no hover, so surface the zoom hint and drop hover-only motion */
+@media (hover:none){
+  .g-tile.has-photo.zoomable::after{ opacity:1; transform:translateY(0) rotate(-3deg); }
+  .g-tile.has-photo.zoomable:hover img{ transform:none; }
+  img.ticket-photo.zoomable:hover{ transform:none; box-shadow:none; }
+  .menu-hero.zoomable:hover{ transform:none; box-shadow:8px 8px 0 var(--ink); }
+  .ticket:hover, .g-tile:hover, .pillar:hover, .why-card:hover{ transform:none; }
+}
