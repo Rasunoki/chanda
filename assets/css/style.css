@@ -266,6 +266,40 @@ nav{
 .ticket-row .price{font-family:'Space Mono',monospace; font-weight:700; white-space:nowrap; color:var(--strawberry);}
 .ticket p.desc{font-size:0.9rem; color:var(--ink-soft); margin:2px 0 0;}
 
+/* ---------- MENU PAGE ---------- */
+.menu-intro{display:grid; grid-template-columns:1.4fr 0.6fr; gap:48px; align-items:center; margin-bottom:6px;}
+.menu-intro .section-sub{margin-bottom:0;}
+.menu-hero{
+  width:100%; max-width:360px; justify-self:end; display:block; aspect-ratio:1/1; object-fit:cover;
+  border:2px solid var(--ink); border-radius:var(--radius-lg);
+  box-shadow:8px 8px 0 var(--ink); background:var(--cream);
+}
+.menu-tabs-label{
+  font-family:'Space Mono',monospace; font-weight:700; text-transform:uppercase;
+  letter-spacing:2px; font-size:0.72rem; color:var(--strawberry);
+  display:flex; align-items:center; gap:16px; margin:56px 0 28px;
+}
+.menu-tabs-label::after{content:""; flex:1; height:2px; background:var(--line);}
+.menu-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:38px 26px;}
+.ticket-photo{
+  display:block; width:100%; aspect-ratio:4/3; object-fit:cover;
+  /* square frame for the tall drink shots */
+  border:2px solid var(--ink); border-radius:2px; margin:0 0 18px;
+  background:var(--cream) center/cover no-repeat;
+}
+.ticket-photo.square{aspect-ratio:1/1;}
+.ticket-photo.product{
+  object-fit:contain; background:var(--paper); padding:14px;
+}
+@media (max-width:1000px){
+  .menu-grid{grid-template-columns:1fr 1fr;}
+  .menu-intro{grid-template-columns:1fr; gap:28px;}
+  .menu-hero{max-width:420px;}
+}
+@media (max-width:600px){
+  .menu-grid{grid-template-columns:1fr;}
+}
+
 /* ---------- ABOUT ---------- */
 .about-grid{display:grid; grid-template-columns:1fr 1fr; gap:48px;}
 @media (max-width:880px){.about-grid{grid-template-columns:1fr;}}
@@ -348,6 +382,12 @@ nav{
 .g-tile.store{background:repeating-linear-gradient(45deg, var(--paper), var(--paper) 12px, var(--cream) 12px, var(--cream) 24px);}
 .g-tile.food{background:radial-gradient(circle at 50% 40%, #fff 0%, var(--mango) 45%, var(--paper) 100%);}
 .g-tile.customer{background:linear-gradient(160deg, var(--raspberry), var(--paper));}
+.g-tile img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover;}
+.g-tile.has-photo span.label{
+  position:absolute; left:10px; bottom:10px; z-index:1;
+  background:var(--paper); color:var(--ink); border:2px solid var(--ink);
+  border-radius:999px; padding:4px 10px;
+}
 .gallery-note{margin-top:18px; font-size:0.88rem; color:var(--ink-soft);}
 
 /* ---------- PROMOTIONS ---------- */
