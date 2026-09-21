@@ -60,6 +60,8 @@ if (navToggle && navLinks && navOverlay) {
   });
   navOverlay.addEventListener('click', closeNav);
   navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', closeNav));
+  // index each item so the mobile drawer can stagger them in
+  navLinks.querySelectorAll('li').forEach((li, i) => li.style.setProperty('--n', i));
 }
 
 /* ---------- Header scroll shadow + top progress bar ---------- */
@@ -76,13 +78,62 @@ const onScroll = () => {
 window.addEventListener('scroll', onScroll, { passive: true });
 onScroll();
 
+/* ---------- Headline word split ----------
+   Wraps each word of the big headings in a .w span so the CSS can pop them in
+   one by one. Existing inline elements (the gradient .accent span) are kept
+   whole and treated as a single word; <br> is left in place. */
+document.querySelectorAll('h1, .section-title').forEach(heading => {
+  if (heading.dataset.noSplit !== undefined) return;
+  let w = 0;
+  Array.from(heading.childNodes).forEach(node => {
+    if (node.nodeType === Node.TEXT_NODE) {
+      const frag = document.createDocumentFragment();
+      node.textContent.split(/(\s+)/).forEach(part => {
+        if (!part) return;
+        if (/^\s+$/.test(part)) { frag.appendChild(document.createTextNode(' ')); return; }
+        const span = document.createElement('span');
+        span.className = 'w';
+        span.style.setProperty('--w', w++);
+        span.textContent = part;
+        frag.appendChild(span);
+      });
+      node.replaceWith(frag);
+    } else if (node.nodeType === Node.ELEMENT_NODE && node.tagName !== 'BR') {
+      node.classList.add('w');
+      node.style.setProperty('--w', w++);
+    }
+  });
+  heading.classList.add('split');
+  // Headings outside any reveal container get observed on their own
+  // (the "words" variant has no fade/slide of its own, only the word pop).
+  if (!heading.closest('[data-reveal], [data-reveal-group]')) heading.setAttribute('data-reveal', 'words');
+});
+
 /* ---------- Scroll reveal ---------- */
 document.querySelectorAll('[data-reveal-group]').forEach(group => {
+  const variant = group.getAttribute('data-reveal-group'); // "" | left | right | pop
   Array.from(group.children).forEach((child, i) => {
     child.style.setProperty('--i', i);
-    child.setAttribute('data-reveal', '');
+    child.setAttribute('data-reveal', child.classList.contains('split') ? 'words' : (variant || ''));
   });
 });
+
+// After the entrance transition finishes, drop data-reveal so the element's
+// own hover transforms (ticket lift, tile zoom…) win again, and mark it
+// .revealed for follow-up animations like the menu price stamp.
+const settleReveal = (el) => {
+  let done = false;
+  const finish = () => {
+    if (done) return;
+    done = true;
+    el.removeEventListener('transitionend', onEnd);
+    el.removeAttribute('data-reveal');
+    el.classList.add('revealed');
+  };
+  const onEnd = (e) => { if (e.target === el && e.propertyName === 'opacity') finish(); };
+  el.addEventListener('transitionend', onEnd);
+  setTimeout(finish, 1400); // 600ms transition + up to 480ms stagger, plus slack
+};
 
 const revealTargets = document.querySelectorAll('[data-reveal]');
 if ('IntersectionObserver' in window && revealTargets.length) {
@@ -90,13 +141,14 @@ if ('IntersectionObserver' in window && revealTargets.length) {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         entry.target.classList.add('in-view');
+        settleReveal(entry.target);
         revealObserver.unobserve(entry.target);
       }
     });
   }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
   revealTargets.forEach(el => revealObserver.observe(el));
 } else {
-  revealTargets.forEach(el => el.classList.add('in-view'));
+  revealTargets.forEach(el => { el.classList.add('in-view'); settleReveal(el); });
 }
 
 /* ---------- FAQ accordion ---------- */
@@ -580,4 +632,50 @@ if (heroPhoto && !introAlreadyPlayed && !prefersReducedMotion) {
     if (e.animationName === 'intro-veil-out') endIntro();
   });
   setTimeout(endIntro, 3000); // safety net if the animation never fires
+}
+
+/* ---------- Page curtain (wipe between pages) ----------
+   Internal .html links wipe a curtain down, then navigate; the next page
+   wipes it back up. Skipped for reduced motion, hash links, new tabs,
+   modifier-clicks, and on the homepage when the plate intro is playing. */
+if (!prefersReducedMotion) {
+  const curtain = document.createElement('div');
+  curtain.className = 'page-curtain';
+  curtain.setAttribute('aria-hidden', 'true');
+  document.body.appendChild(curtain);
+
+  let arrivedViaCurtain = false;
+  try {
+    arrivedViaCurtain = sessionStorage.getItem('sw-curtain') === '1';
+    sessionStorage.removeItem('sw-curtain');
+  } catch (e) {}
+
+  if (arrivedViaCurtain && !document.querySelector('.intro-veil')) {
+    document.body.classList.add('page-enter');
+    curtain.addEventListener('animationend', () => document.body.classList.remove('page-enter'), { once: true });
+    setTimeout(() => document.body.classList.remove('page-enter'), 800);
+  }
+
+  document.addEventListener('click', (e) => {
+    const link = e.target.closest('a[href]');
+    if (!link) return;
+    if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    if (link.target && link.target !== '_self') return;
+    if (link.hasAttribute('download')) return;
+    const url = new URL(link.href, location.href);
+    if (url.origin !== location.origin) return;
+    if (!/\.html?$/i.test(url.pathname)) return;
+    // same page + hash only: let smooth scroll handle it
+    if (url.pathname === location.pathname && url.hash) return;
+
+    e.preventDefault();
+    try { sessionStorage.setItem('sw-curtain', '1'); } catch (e2) {}
+    document.body.classList.add('page-leave');
+    setTimeout(() => { location.href = url.href; }, 400);
+  });
+
+  // Back/forward cache restores the page mid-wipe — clear it.
+  window.addEventListener('pageshow', (e) => {
+    if (e.persisted) document.body.classList.remove('page-leave', 'page-enter');
+  });
 }

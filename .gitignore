@@ -1,0 +1,11 @@
+assets/promo/originals/
+assets/food_gallery/WRAP, SAUCES, AND DRINKS/originals/
+assets/INSIDE THE STOREFRONT/originals/
+assets/with_people/REAL PEOPLE, REAL MOMENTS/originals/
+assets/menu_items/originals/
+# unreferenced source photos — kept on disk, not in the repo
+assets/photo/*
+!assets/photo/homepic.png
+assets/menu/*
+!assets/menu/logo.png
+!assets/menu/favicon.png
