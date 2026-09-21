@@ -533,7 +533,8 @@ footer p{color:#F1D9CB; font-size:0.92rem; max-width:340px;}
 }
 .promo-carousel-viewport {
   overflow: hidden;
-  padding: 26px 0 44px;
+  /* active slide scales x1.25, so leave room above/below for the overflow */
+  padding: 56px 0 64px;
 }
 .promo-carousel-track {
   display: flex;
@@ -557,6 +558,7 @@ footer p{color:#F1D9CB; font-size:0.92rem; max-width:340px;}
 @media (max-width: 600px) {
   .promo-slide { flex-basis: 190px; }
   .promo-carousel-container { padding: 0 40px; }
+  .promo-carousel-viewport { padding: 40px 0 48px; }
 }
 .promo-slide img {
   display: block;
