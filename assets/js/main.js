@@ -239,6 +239,10 @@ if (reservationForm) {
 
   const buildSlotGrid = () => {
     slotGrid.innerHTML = '';
+    const blank = document.createElement('div');
+    blank.className = 'slot-blank';
+    blank.setAttribute('aria-hidden', 'true');
+    slotGrid.appendChild(blank);
     slots.forEach(({ hour24, min }) => {
       const label = formatSlot(hour24, min);
       const past = isPastSlot(hour24, min);

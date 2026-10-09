@@ -516,6 +516,13 @@ nav{
   100%{ transform:scale(1) rotate(0); }
 }
 .slot:disabled{opacity:0.35; cursor:not-allowed; border-style:dashed; background:var(--cream);}
+.slot-blank{
+  font-family:'Space Mono',monospace; font-size:0.85rem;
+  display:flex; align-items:center; justify-content:center;
+  border:2px dashed var(--ink); border-radius:var(--radius); padding:12px 6px;
+  background:var(--cream); color:var(--ink); opacity:0.35;
+}
+.slot-blank::before{content:'—';}
 
 .res-submit{text-align:center; margin-top:30px;}
 .res-status{font-size:0.92rem; font-weight:700; margin:16px 0 0; min-height:1.3em;}
