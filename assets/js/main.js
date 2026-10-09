@@ -182,11 +182,11 @@ if (reservationForm) {
   const statusEl = document.getElementById('resStatus');
   const submitBtn = reservationForm.querySelector('button[type="submit"]');
 
-  const OPEN_HOUR = 8;     // store opens 8:00 AM
+  const FIRST_SLOT_HOUR = 8.5; // first bookable slot 8:30 AM (store opens 8:00 AM)
   const LAST_SLOT_HOUR = 19.5; // last bookable slot 7:30 PM (store closes 8:00 PM)
 
   const slots = [];
-  for (let h = OPEN_HOUR; h <= LAST_SLOT_HOUR; h += 0.5) {
+  for (let h = FIRST_SLOT_HOUR; h <= LAST_SLOT_HOUR; h += 0.5) {
     slots.push({ hour24: Math.floor(h), min: h % 1 === 0 ? 0 : 30 });
   }
 
